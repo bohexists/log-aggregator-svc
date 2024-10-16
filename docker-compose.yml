@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  log-aggregator-svc:
+    build: .
+    container_name: log-aggregator-svc
+    environment:
+      NATS_URL: nats://nats:4222
+      MONGO_URL: mongodb://mongo:27017/logs_db 
+    depends_on:
+      - nats
+      - mongo
+    ports:
+      - "8080:8080"
+
+  nats:
+    image: nats:latest
+    container_name: nats
+    ports:
+      - "4222:4222"
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo-data:
