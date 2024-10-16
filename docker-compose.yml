@@ -6,7 +6,8 @@ services:
     container_name: log-aggregator-svc
     environment:
       NATS_URL: nats://nats:4222
-      MONGO_URL: mongodb://mongo:27017/logs_db 
+      MONGO_URL: mongodb://mongo:27017/logs_db
+      MONGO_DB: "logdb"
     depends_on:
       - nats
       - mongo

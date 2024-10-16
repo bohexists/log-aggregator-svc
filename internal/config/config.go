@@ -8,6 +8,7 @@ import (
 type Config struct {
 	NatsURL  string
 	MongoURL string
+	MongoDB  string
 }
 
 // LoadConfig loads configuration from environment variables.
@@ -15,5 +16,6 @@ func LoadConfig() Config {
 	return Config{
 		NatsURL:  os.Getenv("NATS_URL"),
 		MongoURL: os.Getenv("MONGO_URL"),
+		MongoDB:  os.Getenv("MONGO_DB"),
 	}
 }
