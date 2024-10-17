@@ -9,6 +9,7 @@ import (
 	"github.com/bohexists/log-aggregator-svc/internal/adapters/mongo"
 	"github.com/bohexists/log-aggregator-svc/internal/adapters/nats"
 	"github.com/bohexists/log-aggregator-svc/internal/config"
+	"github.com/bohexists/log-aggregator-svc/ports/inbound"
 )
 
 func main() {
@@ -27,8 +28,11 @@ func main() {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
 
-	// Initialize NATS subscriber
-	natsSubscriber := nats.NewNatsSubscriber(natsClient, mongoClient, "logs")
+	// Initialize NatsConsumer with Mongo repository
+	consumer := inbound.NewNatsConsumer(mongoClient, "logs")
+
+	// Initialize NATS subscriber with the consumer
+	natsSubscriber := nats.NewNatsSubscriber(natsClient, consumer)
 
 	// Subscribe to NATS subject "logs"
 	err = natsSubscriber.SubscribeToLogs("logs")
