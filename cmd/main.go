@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bohexists/log-aggregator-svc/internal/services"
 	"log"
 	"os"
 	"os/signal"
@@ -9,7 +10,6 @@ import (
 	"github.com/bohexists/log-aggregator-svc/internal/adapters/mongo"
 	"github.com/bohexists/log-aggregator-svc/internal/adapters/nats"
 	"github.com/bohexists/log-aggregator-svc/internal/config"
-	"github.com/bohexists/log-aggregator-svc/ports/inbound"
 )
 
 func main() {
@@ -22,22 +22,20 @@ func main() {
 		log.Fatalf("Failed to connect to NATS: %v", err)
 	}
 
-	// Initialize MongoDB client
+	// Initialize MongoDB client and repository
 	mongoClient, err := mongo.NewMongoClient(cfg.MongoURL, cfg.MongoDB)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
+	mongoRepo := mongo.NewMongoRepository(mongoClient)
 
-	// Initialize NatsConsumer with Mongo repository
-	consumer := inbound.NewNatsConsumer(mongoClient, "logs")
+	// Initialize log service
+	logService := services.NewLogService(natsClient, mongoRepo)
 
-	// Initialize NATS subscriber with the consumer
-	natsSubscriber := nats.NewNatsSubscriber(natsClient, consumer)
-
-	// Subscribe to NATS subject "logs"
-	err = natsSubscriber.SubscribeToLogs("logs")
+	// Subscribe to NATS subject "logs" and process incoming logs
+	err = logService.SubscribeAndProcessLogs("logs")
 	if err != nil {
-		log.Fatalf("Failed to subscribe to NATS subject: %v", err)
+		log.Fatalf("Failed to subscribe and process logs: %v", err)
 	}
 
 	// Graceful shutdown

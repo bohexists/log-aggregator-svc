@@ -14,10 +14,10 @@ type MongoRepository struct {
 	db *mongo.Database
 }
 
-// NewMongoRepository creates a new instance of MongoRepository.
-func NewMongoRepository(client *mongo.Client, dbName string) *MongoRepository {
+// NewMongoRepository creates a new MongoRepository.
+func NewMongoRepository(client *MongoClient) *MongoRepository {
 	return &MongoRepository{
-		db: client.Database(dbName),
+		db: client.db,
 	}
 }
 
