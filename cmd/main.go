@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/bohexists/log-aggregator-svc/internal/services"
 	"log"
 	"os"
 	"os/signal"
@@ -10,6 +9,7 @@ import (
 	"github.com/bohexists/log-aggregator-svc/internal/adapters/mongo"
 	"github.com/bohexists/log-aggregator-svc/internal/adapters/nats"
 	"github.com/bohexists/log-aggregator-svc/internal/config"
+	"github.com/bohexists/log-aggregator-svc/internal/services"
 )
 
 func main() {
@@ -30,10 +30,13 @@ func main() {
 	mongoRepo := mongo.NewMongoRepository(mongoClient)
 
 	// Initialize log service
-	logService := services.NewLogService(natsClient, mongoRepo)
+	logService := services.NewLogService(mongoRepo)
+
+	// Initialize NATS subscriber with log service as handler
+	natsSubscriber := nats.NewNatsSubscriber(natsClient, logService)
 
 	// Subscribe to NATS subject "logs" and process incoming logs
-	err = logService.SubscribeAndProcessLogs("logs")
+	err = natsSubscriber.SubscribeToLogs("logs")
 	if err != nil {
 		log.Fatalf("Failed to subscribe and process logs: %v", err)
 	}
