@@ -20,7 +20,7 @@ func NewLogService(mongoRepo *mongo.MongoRepository) *LogService {
 }
 
 // ProcessLog обрабатывает полученный лог и сохраняет его в MongoDB.
-func (s *LogService) ProcessLog(logEntry domain.LogEntry) error {
+func (s LogService) ProcessLog(logEntry domain.LogEntry) error {
 	err := s.mongoRepo.InsertLog(&logEntry)
 	if err != nil {
 		log.Printf("Error saving log to MongoDB: %v", err)
