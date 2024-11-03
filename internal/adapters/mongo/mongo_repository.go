@@ -22,7 +22,7 @@ func NewMongoRepository(client *MongoClient) *MongoRepository {
 }
 
 // InsertLog saves a log entry in the MongoDB logs collection.
-func (r *MongoRepository) InsertLog(logEntry *domain.LogEntry) error {
+func (r MongoRepository) InsertLog(logEntry *domain.LogEntry) error {
 	collection := r.db.Collection("logs")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -38,7 +38,7 @@ func (r *MongoRepository) InsertLog(logEntry *domain.LogEntry) error {
 }
 
 // Close gracefully disconnects from MongoDB.
-func (r *MongoRepository) Close() error {
+func (r MongoRepository) Close() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	err := r.db.Client().Disconnect(ctx)

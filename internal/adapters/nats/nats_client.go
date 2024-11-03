@@ -20,12 +20,12 @@ func NewNatsClient(natsURL string) (*NatsClient, error) {
 }
 
 // Publish publishes a message to NATS.
-func (n *NatsClient) Publish(subject string, data []byte) error {
+func (n NatsClient) Publish(subject string, data []byte) error {
 	return n.conn.Publish(subject, data)
 }
 
 // Subscribe subscribes to a NATS subject and handles messages.
-func (n *NatsClient) Subscribe(subject string, handler nats.MsgHandler) error {
+func (n NatsClient) Subscribe(subject string, handler nats.MsgHandler) error {
 	_, err := n.conn.Subscribe(subject, handler)
 	if err != nil {
 		return err

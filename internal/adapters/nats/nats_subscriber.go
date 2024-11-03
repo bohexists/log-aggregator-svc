@@ -24,7 +24,7 @@ func NewNatsSubscriber(natsClient *NatsClient, logService *services.LogService) 
 }
 
 // SubscribeToLogs listens for log messages on the given NATS subject and sends them to the LogService for processing.
-func (s *NatsSubscriber) SubscribeToLogs(subject string) error {
+func (s NatsSubscriber) SubscribeToLogs(subject string) error {
 	return s.natsClient.Subscribe(subject, func(msg *nats.Msg) {
 		var logEntry domain.LogEntry
 		// Разбираем сообщение из NATS
